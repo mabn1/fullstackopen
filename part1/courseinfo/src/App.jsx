@@ -1,5 +1,13 @@
+const Header = (props) => {
+  return(
+    <div>
+      <h1>{props.course}</h1>
+    </div>
+  )
+}
+
 const App = () => {
-  const course = 'Half Stack application development'
+  const course = 'Half Stack application development Try'
   const part1 = 'Fundamentals of React'
   const exercises1 = 10
   const part2 = 'Using props to pass data'
@@ -9,7 +17,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>{course}</h1>
+      <Header course={course}/>
       <p>
         {part1} {exercises1}
       </p>
@@ -24,4 +32,4 @@ const App = () => {
   )
 }
 
-export default App
+export default App  
