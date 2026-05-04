@@ -33,17 +33,31 @@ const App = () => {
         ? { ...item, votes: item.votes + 1 }
         : item
     )
-
     setVotesData(updatedVotes)
   }
 
+  const maxVotes = Math.max(...votesData.map(item => item.votes))
+  const topAnecdote = votesData.find(item => item.votes === maxVotes)
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <p>has {votesData[selected].votes} votes</p>
 
       <button onClick={handleVote}>vote</button>
       <button onClick={handleNext}>next anecdote</button>
+
+      <h1>Anecdote with most votes</h1>
+
+      {maxVotes === 0 ? (
+        <p>no votes for anecdotes yet</p>
+      ) : (
+        <div>
+          <p>{anecdotes[topAnecdote.index]}</p>
+          <p>has {topAnecdote.votes} votes</p>
+        </div>
+      )}
     </div>
   )
 }
