@@ -15,14 +15,34 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
 
+  const [votesData, setVotesData] = useState(
+    anecdotes.map((_, index) => ({
+      index: index,
+      votes: 0
+    }))
+  )
+
   const handleNext = () => {
     const randomIndex = Math.floor(Math.random() * anecdotes.length)
     setSelected(randomIndex)
   }
 
+  const handleVote = () => {
+    const updatedVotes = votesData.map(item =>
+      item.index === selected
+        ? { ...item, votes: item.votes + 1 }
+        : item
+    )
+
+    setVotesData(updatedVotes)
+  }
+
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <p>has {votesData[selected].votes} votes</p>
+
+      <button onClick={handleVote}>vote</button>
       <button onClick={handleNext}>next anecdote</button>
     </div>
   )
