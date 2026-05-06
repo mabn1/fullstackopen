@@ -21,10 +21,20 @@ const Content = ({ parts }) => (
   </table>
 )
 
+const Total = ({ parts }) => {
+  let sum = 0
+  { parts.map(part => (sum+=part.exercises)) }
+  return (
+   <h3>Total of {sum} exercises</h3> 
+  )
+}
+
+
 const Course = ({ course }) => (
   <div>
     <Header course={course.name} />
     <Content parts={course.parts} />
+    <Total parts={course.parts} />
   </div>
 )
 
