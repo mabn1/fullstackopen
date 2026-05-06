@@ -22,13 +22,14 @@ const Content = ({ parts }) => (
 )
 
 const Total = ({ parts }) => {
-  let sum = 0
-  { parts.map(part => (sum+=part.exercises)) }
+  const exercises = parts.map(part => part.exercises)
+
+  const result = exercises.reduce((acc, ex) => acc + ex, 0)
+
   return (
-   <h3>Total of {sum} exercises</h3> 
+    <h3>Total of {result} exercises</h3>
   )
 }
-
 
 const Course = ({ course }) => (
   <div>
