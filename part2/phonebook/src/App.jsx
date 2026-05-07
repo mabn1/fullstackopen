@@ -23,7 +23,7 @@ const App = () => {
 
     setPersons(persons.concat(newPerson))
     setNewName('')
-    // ❌ ERROR: olvidaste limpiar el número
+    setNewNumber('')
   }
 
   return (
