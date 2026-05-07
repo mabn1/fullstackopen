@@ -9,6 +9,15 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
+    const exists = persons.some(
+      person => person.name === newName
+    )
+
+    if (exists) {
+      alert(`${newName} ya está en la agenda`)
+      return
+    }
+
     const personObject = {
       name: newName
     }
