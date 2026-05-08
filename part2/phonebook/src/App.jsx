@@ -1,24 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
-const Filter = ({ filter, onChange }) => (
+const Filter = ({ filter, handleFilterChange }) => (
   <div>
-    filter shown with <input value={filter} onChange={onChange} />
+    filter shown with{' '}
+    <input value={filter} onChange={handleFilterChange} />
   </div>
 )
 
 const PersonForm = ({
-  onSubmit,
+  addPerson,
   newName,
-  onNameChange,
+  handleNameChange,
   newNumber,
-  onNumberChange
+  handleNumberChange
 }) => (
-  <form onSubmit={onSubmit}>
+  <form onSubmit={addPerson}>
     <div>
-      name: <input value={newName} onChange={onNameChange} />
+      name: <input value={newName} onChange={handleNameChange} />
     </div>
     <div>
-      number: <input value={newNumber} onChange={onNumberChange} />
+      number: <input value={newNumber} onChange={handleNumberChange} />
     </div>
     <div>
       <button type="submit">add</button>
@@ -26,9 +28,9 @@ const PersonForm = ({
   </form>
 )
 
-const Persons = ({ persons }) => (
+const Persons = ({ personsToShow }) => (
   <ul>
-    {persons.map((person) => (
+    {personsToShow.map(person => (
       <li key={person.id}>
         {person.name} {person.number}
       </li>
@@ -37,20 +39,30 @@ const Persons = ({ persons }) => (
 )
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
-
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
-  const handleNameChange = (event) => setNewName(event.target.value)
-  const handleNumberChange = (event) => setNewNumber(event.target.value)
-  const handleFilterChange = (event) => setFilter(event.target.value)
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value)
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -74,23 +86,23 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Filter filter={filter} onChange={handleFilterChange} />
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
       <h3>Add a new</h3>
 
       <PersonForm
-        onSubmit={addPerson}
+        addPerson={addPerson}
         newName={newName}
-        onNameChange={handleNameChange}
+        handleNameChange={handleNameChange}
         newNumber={newNumber}
-        onNumberChange={handleNumberChange}
+        handleNumberChange={handleNumberChange}
       />
 
       <h3>Numbers</h3>
 
-      <Persons persons={personsToShow} />
+      <Persons personsToShow={personsToShow} />
     </div>
   )
-}
+} 
 
 export default App
