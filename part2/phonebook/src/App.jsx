@@ -32,6 +32,16 @@ const App = () => {
       })
   }
 
+  const deletePerson = (id) => {
+    const person = persons.find(p => p.id === id)
+
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService.remove(id).then(() => {
+        setPersons(persons.filter(p => p.id !== id))
+      })
+    }
+  }
+
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleFilterChange = (event) => setFilter(event.target.value)
@@ -68,6 +78,8 @@ const App = () => {
         {personsToShow.map(person => (
           <li key={person.id}>
             {person.name} {person.number}
+            {" "}
+            <button onClick={() => deletePerson(person.id)}>delete</button>
           </li>
         ))}
       </ul>
