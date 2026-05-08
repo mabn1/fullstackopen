@@ -18,18 +18,38 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    const newPerson = {
-      name: newName,
-      number: newNumber
-    }
+    const existingPerson = persons.find(
+      p => p.name.toLowerCase() === newName.toLowerCase()
+    )
 
-    personService
-      .create(newPerson)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
-      })
+    if (existingPerson) {
+      if (window.confirm(`${existingPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
+        const updatedPerson = { ...existingPerson, number: newNumber }
+
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(p =>
+              p.id !== existingPerson.id ? p : returnedPerson
+            ))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
+    } else {
+      const newPerson = {
+        name: newName,
+        number: newNumber
+      }
+
+      personService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+    }
   }
 
   const deletePerson = (id) => {
@@ -78,8 +98,12 @@ const App = () => {
         {personsToShow.map(person => (
           <li key={person.id}>
             {person.name} {person.number}
-            {" "}
-            <button onClick={() => deletePerson(person.id)}>delete</button>
+            <button
+              onClick={() => deletePerson(person.id)}
+              style={{ marginLeft: '10px' }}
+            >
+              delete
+            </button>
           </li>
         ))}
       </ul>
