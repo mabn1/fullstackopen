@@ -10,7 +10,7 @@ let persons = [
   { id: 4, name: "Mary Poppendieck", number: "39-23-6423122" }
 ]
 
-const generateId = () => Math.floor(Math.random() * 1000000)
+const generateId = () => Math.floor(Math.random() * 1000000000)
 
 app.get('/api/persons', (req, res) => {
   res.json(persons)
@@ -35,6 +35,16 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
+
+  if (!body.name || !body.number) {
+    return res.status(400).json({ error: 'name or number missing' })
+  }
+
+  const nameExists = persons.some(p => p.name === body.name)
+
+  if (nameExists) {
+    return res.status(400).json({ error: 'name must be unique' })
+  }
 
   const newPerson = {
     id: generateId(),
