@@ -32,9 +32,10 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  persons = persons.filter(p => p.id !== id)
-  res.status(204).end()
+  Person.findByIdAndDelete(req.params.id)
+    .then(() => {
+      res.status(204).end()
+    })
 })
 
 app.post('/api/persons', (req, res) => {
