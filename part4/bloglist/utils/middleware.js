@@ -1,6 +1,15 @@
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  res.status(500).json({ error: 'something went wrong' })
+
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
+
+module.exports = {
+  errorHandler
 }
 
 module.exports = { errorHandler }
