@@ -127,3 +127,21 @@ test('a blog can be deleted', async () => {
   const titles = blogsAtEnd.map(b => b.title)
   assert(!titles.includes(blogToDelete.title))
 })
+
+test('a blog can be updated', async () => {
+  const blogsAtStart = await Blog.find({})
+  const blogToUpdate = blogsAtStart[0]
+
+  const updatedData = {
+    ...blogToUpdate.toJSON(),
+    likes: 999
+  }
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedData)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(response.body.likes, 999)
+})
