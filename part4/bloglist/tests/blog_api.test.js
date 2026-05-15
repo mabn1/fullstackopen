@@ -8,6 +8,30 @@ const api = supertest(app)
 
 const Blog = require('../models/blog')
 
+
+const User = require('../models/user')
+
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  await User.deleteMany({})
+
+  const user = new User({
+    username: 'testuser',
+    name: 'Test User',
+    passwordHash: '123456'
+  })
+
+  await user.save()
+
+  await Blog.create({
+    title: 'Primer blog',
+    author: 'Miguel',
+    url: 'test.com',
+    likes: 1,
+    user: user._id
+  })
+})
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
