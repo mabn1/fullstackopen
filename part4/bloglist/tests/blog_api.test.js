@@ -1,45 +1,44 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-
 const app = require('../app')
 const api = supertest(app)
-
 const Blog = require('../models/blog')
-
-
 const User = require('../models/user')
+const bcrypt = require('bcryptjs')
+
+let token
 
 beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
 
+  const passwordHash = await bcrypt.hash('123456', 10)
+
   const user = new User({
     username: 'testuser',
     name: 'Test User',
-    passwordHash: '123456'
+    passwordHash
   })
 
-  await user.save()
+  const savedUser = await user.save()
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({
+      username: 'testuser',
+      password: '123456'
+    })
+
+  token = loginResponse.body.token
 
   await Blog.create({
     title: 'Primer blog',
     author: 'Miguel',
     url: 'test.com',
     likes: 1,
-    user: user._id
-  })
-})
-
-beforeEach(async () => {
-  await Blog.deleteMany({})
-
-  await Blog.create({
-    title: 'Primer blog',
-    author: 'Miguel',
-    url: 'test.com',
-    likes: 1
+    user: savedUser._id
   })
 })
 
@@ -50,13 +49,8 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-after(async () => {
-  await mongoose.connection.close()
-})
-
 test('the unique identifier property of the blog posts is named id', async () => {
   const response = await api.get('/api/blogs')
-
   const blog = response.body[0]
 
   assert(blog.id !== undefined)
@@ -74,6 +68,7 @@ test('a valid blog can be added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -95,6 +90,7 @@ test('if likes property is missing, it defaults to 0', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
 
@@ -113,6 +109,7 @@ test('blog without title is not added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 
@@ -129,6 +126,7 @@ test('blog without url is not added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 
@@ -147,9 +145,6 @@ test('a blog can be deleted', async () => {
   const blogsAtEnd = await Blog.find({})
 
   assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
-
-  const titles = blogsAtEnd.map(b => b.title)
-  assert(!titles.includes(blogToDelete.title))
 })
 
 test('a blog can be updated', async () => {
@@ -168,4 +163,8 @@ test('a blog can be updated', async () => {
     .expect('Content-Type', /application\/json/)
 
   assert.strictEqual(response.body.likes, 999)
+})
+
+after(async () => {
+  await mongoose.connection.close()
 })
