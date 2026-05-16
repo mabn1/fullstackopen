@@ -1,14 +1,29 @@
 const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 const tokenExtractor = (request, response, next) => {
-  const authorization = request.headers.authorization
+  const authorization = request.get('authorization')
 
   if (authorization && authorization.startsWith('Bearer ')) {
-    request.token = authorization.substring(7)
+    request.token = authorization.replace('Bearer ', '')
   } else {
     request.token = null
   }
 
+  next()
+}
+
+const userExtractor = async (req, res, next) => {
+  if (!req.token) {
+    req.user = null
+    return next()
+  }
+
+  const decodedToken = jwt.verify(req.token, process.env.SECRET)
+
+  const user = await User.findById(decodedToken.id)
+
+  req.user = user
   next()
 }
 
@@ -35,5 +50,6 @@ const errorHandler = (error, request, response, next) => {
 
 module.exports = {
   tokenExtractor,
+  userExtractor,  
   errorHandler
 }
