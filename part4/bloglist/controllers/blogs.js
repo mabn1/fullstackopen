@@ -19,21 +19,21 @@ blogsRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body
 
-    const authorization = request.get('authorization')
-
-    if (!authorization || !authorization.startsWith('Bearer ')) {
+    if (!request.token) {
       return response.status(401).json({ error: 'token missing' })
     }
 
-    const token = authorization.replace('Bearer ', '')
-
-    const decodedToken = jwt.verify(token, process.env.SECRET)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
     if (!decodedToken.id) {
       return response.status(401).json({ error: 'token invalid' })
     }
 
     const user = await User.findById(decodedToken.id)
+
+    if (!user) {
+      return response.status(401).json({ error: 'user not found' })
+    }
 
     const blog = new Blog({
       title: body.title,
