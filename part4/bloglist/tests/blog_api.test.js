@@ -193,6 +193,23 @@ test('blog cannot be deleted by another user', async () => {
     .expect(403)
 })
 
+test('adding a blog fails with 401 if token is not provided', async () => {
+  const newBlog = {
+    title: 'Blog sin token',
+    author: 'Miguel',
+    url: 'test.com',
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+
+  const blogsAtEnd = await Blog.find({})
+  assert.strictEqual(blogsAtEnd.length, 1)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
