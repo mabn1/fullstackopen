@@ -21,6 +21,13 @@ const App = () => {
         password,
       })
 
+      window.localStorage.setItem(
+        'loggedBlogappUser',
+        JSON.stringify(user)
+      )
+
+      blogService.setToken(user.token)
+
       setUser(user)
       setUsername('')
       setPassword('')
@@ -30,37 +37,50 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
+  }
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
   if (user === null) {
     return (
       <div>
-        <h2>Log in to application</h2>
-
-        {errorMessage && <div>{errorMessage}</div>}
-
+        <h2>Log in</h2>
         <form onSubmit={handleLogin}>
           <div>
-            username
+            username:   
             <input
               value={username}
               onChange={({ target }) => setUsername(target.value)}
+              autoComplete="username"
             />
           </div>
-
           <div>
-            password
+            password:   
             <input
               type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
+              autoComplete="current-password"
             />
           </div>
-
           <button type="submit">login</button>
         </form>
       </div>
@@ -71,7 +91,10 @@ const App = () => {
     <div>
       <h2>blogs</h2>
 
-      <p>{user.name} logged in</p>
+      <p>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button>
+      </p>
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
