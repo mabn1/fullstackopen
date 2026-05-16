@@ -140,6 +140,7 @@ test('a blog can be deleted', async () => {
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`) // 🔥 FIX
     .expect(204)
 
   const blogsAtEnd = await Blog.find({})
@@ -165,6 +166,34 @@ test('a blog can be updated', async () => {
   assert.strictEqual(response.body.likes, 999)
 })
 
+test('blog cannot be deleted by another user', async () => {
+  const passwordHash = await bcrypt.hash('otro123', 10)
+  const anotherUser = new User({
+    username: 'otro',
+    name: 'Otro User',
+    passwordHash
+  })
+  await anotherUser.save()
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({
+      username: 'otro',
+      password: 'otro123'
+    })
+
+  const anotherToken = loginResponse.body.token
+
+  const blogs = await Blog.find({})
+  const blogToDelete = blogs[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${anotherToken}`)
+    .expect(403)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
+
