@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -49,22 +49,33 @@ const App = () => {
     event.preventDefault()
 
     try {
-      const newBlog = {
+      const blogObject = {
         title,
         author,
-        url,
+        url
       }
 
-      const returnedBlog = await blogService.create(newBlog)
+      const returnedBlog = await blogService.create(blogObject)
 
       setBlogs(blogs.concat(returnedBlog))
+
+      setErrorMessage(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+      )
+
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
 
       setTitle('')
       setAuthor('')
       setUrl('')
+
     } catch (error) {
-      setErrorMessage('error creating blog')
-      setTimeout(() => setErrorMessage(null), 5000)
+      setErrorMessage('failed to add blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
@@ -89,6 +100,9 @@ const App = () => {
     return (
       <div>
         <h2>Log in</h2>
+
+        <Notification message={errorMessage} />
+
         <form onSubmit={handleLogin}>
           <div>
             username:
@@ -116,6 +130,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+
+      <Notification message={errorMessage} />
 
       <p>
         {user.name} logged in
