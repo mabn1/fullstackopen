@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
+import { vi } from 'vitest'
 
 test('renders title and author, but not url or likes by default', () => {
   const blog = {
@@ -62,4 +64,30 @@ test('like button is called twice when clicked twice', async () => {
   await user.click(likeButton)
 
   expect(mockHandler.mock.calls).toHaveLength(2)
+})
+
+test('form calls createBlog with correct details when submitted', async () => {
+  const createBlog = vi.fn()
+  const user = userEvent.setup()
+
+  render(<BlogForm createBlog={createBlog} />)
+
+  const titleInput = screen.getByPlaceholderText('title')
+  const authorInput = screen.getByPlaceholderText('author')
+  const urlInput = screen.getByPlaceholderText('url')
+  const sendButton = screen.getByText('create')
+
+  await user.type(titleInput, 'Nuevo blog de prueba')
+  await user.type(authorInput, 'Miguel')
+  await user.type(urlInput, 'http://test.com')
+
+  await user.click(sendButton)
+
+  expect(createBlog.mock.calls).toHaveLength(1)
+
+  expect(createBlog.mock.calls[0][0]).toEqual({
+    title: 'Nuevo blog de prueba',
+    author: 'Miguel',
+    url: 'http://test.com'
+  })
 })
