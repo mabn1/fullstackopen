@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
-import { useRef } from 'react'
-
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -29,7 +27,6 @@ const App = () => {
         'loggedBlogappUser',
         JSON.stringify(user)
       )
-
 
       blogService.setToken(user.token)
 
@@ -57,6 +54,7 @@ const App = () => {
 
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
 
+      // 👇 FIX importante del 5.9
       returnedBlog.user = blog.user
 
       setBlogs(blogs.map(b =>
@@ -71,7 +69,7 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     try {
-      blogFormRef.current.toggleVisibility() // 👈 ESTA ES LA CLAVE
+      blogFormRef.current.toggleVisibility()
 
       const returnedBlog = await blogService.create(blogObject)
 
@@ -104,6 +102,8 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   if (user === null) {
     return (
@@ -151,7 +151,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs.map(blog =>
+      {sortedBlogs.map(blog =>
         <Blog
           key={blog.id}
           blog={blog}
@@ -161,7 +161,5 @@ const App = () => {
     </div>
   )
 }
-
-
 
 export default App
