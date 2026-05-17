@@ -33,7 +33,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (error) {
+    } catch {
       setErrorMessage('wrong username or password')
       setTimeout(() => setErrorMessage(null), 5000)
     }
@@ -54,14 +54,14 @@ const App = () => {
 
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
 
-      // 👇 FIX importante del 5.9
+
       returnedBlog.user = blog.user
 
       setBlogs(blogs.map(b =>
         b.id !== blog.id ? b : returnedBlog
       ))
 
-    } catch (error) {
+    } catch {
       setErrorMessage('failed to update likes')
       setTimeout(() => setErrorMessage(null), 5000)
     }
@@ -82,7 +82,7 @@ const App = () => {
       setErrorMessage(`blog '${blog.title}' removed`)
       setTimeout(() => setErrorMessage(null), 5000)
 
-    } catch (error) {
+    } catch {
       setErrorMessage('failed to delete blog')
       setTimeout(() => setErrorMessage(null), 5000)
     }
@@ -101,7 +101,7 @@ const App = () => {
       )
       setTimeout(() => setErrorMessage(null), 5000)
 
-    } catch (error) {
+    } catch {
       setErrorMessage('failed to add blog')
       setTimeout(() => setErrorMessage(null), 5000)
     }

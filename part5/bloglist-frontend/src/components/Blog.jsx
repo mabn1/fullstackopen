@@ -15,7 +15,6 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
     marginBottom: 5
   }
 
-  // 👇 condición clave del ejercicio
   const showRemoveButton =
     blog.user && user && blog.user.username === user.username
 
@@ -46,7 +45,7 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
         {blog.user?.name}
       </div>
 
-      {/* 👇 AQUÍ está el remove */}
+
       {showRemoveButton && (
         <button onClick={() => handleRemove(blog)}>
           remove
