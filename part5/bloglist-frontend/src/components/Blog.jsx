@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ blog, handleLike, handleRemove, user }) => {
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -14,6 +14,10 @@ const Blog = ({ blog, handleLike }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+
+  // 👇 condición clave del ejercicio
+  const showRemoveButton =
+    blog.user && user && blog.user.username === user.username
 
   if (!visible) {
     return (
@@ -41,6 +45,13 @@ const Blog = ({ blog, handleLike }) => {
       <div>
         {blog.user?.name}
       </div>
+
+      {/* 👇 AQUÍ está el remove */}
+      {showRemoveButton && (
+        <button onClick={() => handleRemove(blog)}>
+          remove
+        </button>
+      )}
     </div>
   )
 }

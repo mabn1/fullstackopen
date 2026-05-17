@@ -67,6 +67,27 @@ const App = () => {
     }
   }
 
+  const handleRemove = async (blog) => {
+    const confirmDelete = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}?`
+    )
+
+    if (!confirmDelete) return
+
+    try {
+      await blogService.remove(blog.id)
+
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+
+      setErrorMessage(`blog '${blog.title}' removed`)
+      setTimeout(() => setErrorMessage(null), 5000)
+
+    } catch (error) {
+      setErrorMessage('failed to delete blog')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
   const addBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
@@ -156,6 +177,8 @@ const App = () => {
           key={blog.id}
           blog={blog}
           handleLike={handleLike}
+          handleRemove={handleRemove}
+          user={user}
         />
       )}
     </div>
