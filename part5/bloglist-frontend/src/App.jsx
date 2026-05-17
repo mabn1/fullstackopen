@@ -29,7 +29,7 @@ const App = () => {
         'loggedBlogappUser',
         JSON.stringify(user)
       )
-      
+
 
       blogService.setToken(user.token)
 
@@ -45,6 +45,28 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+  }
+
+  const handleLike = async (blog) => {
+    try {
+      const updatedBlog = {
+        ...blog,
+        likes: blog.likes + 1,
+        user: blog.user.id || blog.user._id
+      }
+
+      const returnedBlog = await blogService.update(blog.id, updatedBlog)
+
+      returnedBlog.user = blog.user
+
+      setBlogs(blogs.map(b =>
+        b.id !== blog.id ? b : returnedBlog
+      ))
+
+    } catch (error) {
+      setErrorMessage('failed to update likes')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
   }
 
   const addBlog = async (blogObject) => {
@@ -130,7 +152,11 @@ const App = () => {
       </Togglable>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLike={handleLike}
+        />
       )}
     </div>
   )
