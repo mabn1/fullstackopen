@@ -29,6 +29,7 @@ const App = () => {
         'loggedBlogappUser',
         JSON.stringify(user)
       )
+      
 
       blogService.setToken(user.token)
 
