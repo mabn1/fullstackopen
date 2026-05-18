@@ -52,21 +52,43 @@ describe('Blog app', () => {
   })
 
   describe('When logged in', () => {
-  beforeEach(async ({ page }) => {
-    await loginWith(page, 'testuser', 'testpass')
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'testuser', 'testpass')
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'create new blog' }).click()
+
+      await page.getByPlaceholder('title').fill('Test blog')
+      await page.getByPlaceholder('author').fill('Miguel')
+      await page.getByPlaceholder('url').fill('http://test.com')
+
+      await page.getByRole('button', { name: 'create' }).click()
+
+      await expect(page.getByTestId('blog-title')).toHaveText('Test blog Miguel')
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      await page.getByRole('button', { name: 'create new blog' }).click()
+
+      await page.getByPlaceholder('title').fill('Like test')
+      await page.getByPlaceholder('author').fill('Miguel')
+      await page.getByPlaceholder('url').fill('http://like.com')
+
+      await page.getByRole('button', { name: 'create' }).click()
+
+      const blog = page.getByText('Like test Miguel')
+      await expect(blog).toBeVisible()
+
+      await blog.locator('..').getByRole('button', { name: 'view' }).click()
+
+      const likes = page.getByTestId('likes')
+      await expect(likes).toHaveText('likes 0')
+
+      await page.getByRole('button', { name: 'like' }).click()
+
+      await expect(likes).toHaveText('likes 1')
+    })
   })
-
-  test('a new blog can be created', async ({ page }) => {
-    await page.getByRole('button', { name: 'create new blog' }).click()
-
-    await page.getByPlaceholder('title').fill('Test blog')
-    await page.getByPlaceholder('author').fill('Miguel')
-    await page.getByPlaceholder('url').fill('http://test.com')
-
-    await page.getByRole('button', { name: 'create' }).click()
-
-    await expect(page.getByTestId('blog-title')).toHaveText('Test blog Miguel')
-  })
-})
 
 })
