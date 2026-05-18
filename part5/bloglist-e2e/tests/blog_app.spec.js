@@ -52,21 +52,21 @@ describe('Blog app', () => {
   })
 
   describe('When logged in', () => {
-    beforeEach(async ({ page }) => {
-      await loginWith(page, 'testuser', 'testpass')
-    })
-
-    test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'create new blog' }).click()
-
-      await page.getByPlaceholder('title').fill('Test blog')
-      await page.getByPlaceholder('author').fill('Miguel')
-      await page.getByPlaceholder('url').fill('http://test.com')
-
-      await page.getByRole('button', { name: 'create' }).click()
-
-      await expect(page.getByText('Test blog Miguel')).toBeVisible()
-    })
+  beforeEach(async ({ page }) => {
+    await loginWith(page, 'testuser', 'testpass')
   })
+
+  test('a new blog can be created', async ({ page }) => {
+    await page.getByRole('button', { name: 'create new blog' }).click()
+
+    await page.getByPlaceholder('title').fill('Test blog')
+    await page.getByPlaceholder('author').fill('Miguel')
+    await page.getByPlaceholder('url').fill('http://test.com')
+
+    await page.getByRole('button', { name: 'create' }).click()
+
+    await expect(page.getByTestId('blog-title')).toHaveText('Test blog Miguel')
+  })
+})
 
 })
