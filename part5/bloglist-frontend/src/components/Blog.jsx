@@ -16,41 +16,55 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
   }
 
   const showRemoveButton =
-    blog.user && user && blog.user.username === user.username
-
-  if (!visible) {
-    return (
-      <div style={blogStyle}>
-        {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>view</button>
-      </div>
-    )
-  }
+    blog.user &&
+    user &&
+    blog.user.username === user.username
 
   return (
-    <div style={blogStyle}>
-      <div>
-        {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>hide</button>
-      </div>
+    <div style={blogStyle} className="blog" data-testid="blog">
 
-      <div>{blog.url}</div>
+      {!visible ? (
+        <>
+          <span data-testid="blog-title">
+            {blog.title} {blog.author}
+          </span>
 
-      <div>
-        likes {blog.likes}
-        <button onClick={() => handleLike(blog)}>like</button>
-      </div>
+          <button onClick={toggleVisibility}>
+            view
+          </button>
+        </>
+      ) : (
+        <>
+          <div>
+            {blog.title} {blog.author}
 
-      <div>
-        {blog.user?.name}
-      </div>
+            <button onClick={toggleVisibility}>
+              hide
+            </button>
+          </div>
 
+          <div>{blog.url}</div>
 
-      {showRemoveButton && (
-        <button onClick={() => handleRemove(blog)}>
-          remove
-        </button>
+          <div>
+            <span data-testid="likes">
+              likes {blog.likes}
+            </span>
+
+            <button onClick={() => handleLike(blog)}>
+              like
+            </button>
+          </div>
+
+          <div>{blog.user?.name}</div>
+
+          {showRemoveButton && (
+            <button onClick={() => handleRemove(blog)}>
+              remove
+            </button>
+          )}
+        </>
       )}
+
     </div>
   )
 }

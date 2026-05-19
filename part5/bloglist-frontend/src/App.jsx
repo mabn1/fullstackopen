@@ -93,7 +93,7 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
 
       const returnedBlog = await blogService.create(blogObject)
-
+      returnedBlog.user = user
       setBlogs(blogs.concat(returnedBlog))
 
       setErrorMessage(
@@ -137,6 +137,7 @@ const App = () => {
           <div>
             username:
             <input
+              data-testid="username"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
               autoComplete="username"
@@ -145,6 +146,7 @@ const App = () => {
           <div>
             password:
             <input
+              data-testid="password"
               type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
