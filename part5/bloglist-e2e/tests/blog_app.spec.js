@@ -110,6 +110,37 @@ describe('Blog app', () => {
 
       await expect(page.getByText('Delete test Miguel')).not.toBeVisible()
     })
+
+    test('only the creator can see the remove button', async ({ page, request }) => {
+
+      await page.getByRole('button', { name: 'create new blog' }).click()
+
+      await page.getByPlaceholder('title').fill('Protected blog')
+      await page.getByPlaceholder('author').fill('Miguel')
+      await page.getByPlaceholder('url').fill('http://protected.com')
+
+      await page.getByRole('button', { name: 'create' }).click()
+
+      await page.getByRole('button', { name: 'logout' }).click()
+
+      await request.post('/api/users', {
+        data: {
+          name: 'Other User',
+          username: 'otheruser',
+          password: 'otherpass'
+        }
+      })
+
+      await loginWith(page, 'otheruser', 'otherpass')
+
+      const blog = page.getByText('Protected blog Miguel')
+
+      await blog.locator('..').getByRole('button', { name: 'view' }).click()
+
+      await expect(
+        page.getByRole('button', { name: 'remove' })
+      ).not.toBeVisible()
+    })
   })
 
 })
