@@ -92,6 +92,34 @@ describe('Blog app', function () {
       cy.contains(/^likes 1$/)
     })
 
+    it('A blog can be deleted by the creator', function () {
+
+      cy.contains(/^create new blog$/).click()
+
+      cy.get('[placeholder="title"]').type('Blog para borrar')
+      cy.get('[placeholder="author"]').type('Miguel')
+      cy.get('[placeholder="url"]').type('http://delete.com')
+
+      cy.get('#create-blog-button').click()
+
+      cy.contains('Blog para borrar Miguel')
+
+      cy.contains('Blog para borrar Miguel')
+        .parent()
+        .contains(/^view$/)
+        .click()
+
+      cy.on('window:confirm', () => true)
+
+      cy.contains('Blog para borrar Miguel')
+        .parent()
+        .contains(/^remove$/)
+        .click()
+
+      cy.contains('Blog para borrar Miguel')
+        .should('not.exist')
+    })
+
   })
 
 })
