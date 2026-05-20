@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createStore } from 'redux'
-import counterReducer from './reducers/counterReducer'
+import counterReducer from './reducers/counterReducer.js'
 import App from './App.jsx'
 
 const store = createStore(counterReducer)

@@ -1,8 +1,10 @@
 const App = ({ store }) => {
+
   const state = store.getState()
 
   return (
     <div>
+
       <button onClick={() => store.dispatch({ type: 'GOOD' })}>
         good
       </button>
@@ -22,6 +24,7 @@ const App = ({ store }) => {
       <div>good {state.good}</div>
       <div>ok {state.ok}</div>
       <div>bad {state.bad}</div>
+
     </div>
   )
 }
