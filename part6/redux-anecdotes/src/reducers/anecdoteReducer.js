@@ -1,52 +1,56 @@
-const anecdotesAtStart = [
-  'If it hurts, do it more often',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+import { createSlice } from '@reduxjs/toolkit'
+
+const initialState = [
+  {
+    content: 'If it hurts, do it more often',
+    id: 1,
+    votes: 0
+  },
+  {
+    content: 'Adding manpower to a late software project makes it later!',
+    id: 2,
+    votes: 0
+  },
+  {
+    content: 'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+    id: 3,
+    votes: 0
+  },
+  {
+    content: 'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    id: 4,
+    votes: 0
+  },
+  {
+    content: 'Premature optimization is the root of all evil.',
+    id: 5,
+    votes: 0
+  },
+  {
+    content: 'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
+    id: 6,
+    votes: 0
+  }
 ]
 
-const getId = () => (100000 * Math.random()).toFixed(0)
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    voteAnecdote(state, action) {
+      const id = action.payload
+      const anecdote = state.find(a => a.id === id)
 
-const asObject = (anecdote) => ({
-  content: anecdote,
-  id: getId(),
-  votes: 0
-})
+      if (anecdote) {
+        anecdote.votes += 1
+      }
+    },
 
-const initialState = anecdotesAtStart.map(asObject)
-
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'VOTE':
-      return state.map(a =>
-        a.id === action.payload.id
-          ? { ...a, votes: a.votes + 1 }
-          : a
-      )
-
-    case 'NEW_ANECDOTE':
-      return [...state, action.payload]
-
-    default:
-      return state
-  }
-}
-
-export const voteAnecdote = (id) => ({
-  type: 'VOTE',
-  payload: { id }
-})
-
-export const createAnecdote = (content) => ({
-  type: 'NEW_ANECDOTE',
-  payload: {
-    content,
-    votes: 0,
-    important: false,  
-    id: getId()
+    createAnecdote(state, action) {
+      state.push(action.payload)
+    }
   }
 })
 
-export default reducer
+export const { voteAnecdote, createAnecdote } = anecdoteSlice.actions
+export default anecdoteSlice.reducer
