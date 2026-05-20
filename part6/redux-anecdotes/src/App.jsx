@@ -15,6 +15,7 @@ const App = () => {
   const addAnecdote = (event) => {
     event.preventDefault()
 
+    
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
 
