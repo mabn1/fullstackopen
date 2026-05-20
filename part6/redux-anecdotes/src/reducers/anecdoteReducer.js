@@ -44,6 +44,7 @@ export const createAnecdote = (content) => ({
   payload: {
     content,
     votes: 0,
+    important: false,  
     id: getId()
   }
 })
