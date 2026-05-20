@@ -168,6 +168,39 @@ describe('Blog app', function () {
       cy.contains(/^remove$/).should('not.exist')
     })
 
+    it('Blogs are ordered according to likes', function () {
+      const createBlog = (title, author, url) => {
+        cy.contains(/^create new blog$/).click()
+        cy.get('[placeholder="title"]').type(title)
+        cy.get('[placeholder="author"]').type(author)
+        cy.get('[placeholder="url"]').type(url)
+        cy.get('#create-blog-button').click()
+        cy.contains(`${title} ${author}`).should('be.visible')
+      }
+
+      createBlog('First blog', 'Miguel', 'http://1.com')
+      createBlog('Second blog', 'Miguel', 'http://2.com')
+      createBlog('Third blog', 'Miguel', 'http://3.com')
+
+      cy.get('.blog').each($blog => {
+        cy.wrap($blog).contains(/^view$/).click()
+      })
+
+      cy.contains('.blog', 'Second blog').contains(/^like$/).click()
+      cy.contains('.blog', 'Second blog').find('[data-testid="likes"]').should('contain', '1')
+
+      cy.contains('.blog', 'Second blog').contains(/^like$/).click()
+      cy.contains('.blog', 'Second blog').find('[data-testid="likes"]').should('contain', '2')
+
+      cy.contains('.blog', 'Third blog').contains(/^like$/).click()
+      cy.contains('.blog', 'Third blog').find('[data-testid="likes"]').should('contain', '1')
+
+      cy.get('.blog').should('have.length', 3)
+      cy.get('.blog').eq(0).should('contain', 'Second blog')
+      cy.get('.blog').eq(1).should('contain', 'Third blog')
+      cy.get('.blog').eq(2).should('contain', 'First blog')
+    })
+
   })
 
 })
