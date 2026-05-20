@@ -12,6 +12,14 @@ describe('Blog app', function () {
 
     cy.request('POST', 'http://localhost:3001/api/users', user)
 
+    const anotherUser = {
+      name: 'Another User',
+      username: 'anotheruser',
+      password: 'anotherpass'
+    }
+
+    cy.request('POST', 'http://localhost:3001/api/users', anotherUser)
+
     cy.visit('/')
   })
 
@@ -118,6 +126,46 @@ describe('Blog app', function () {
 
       cy.contains('Blog para borrar Miguel')
         .should('not.exist')
+    })
+
+    it('Only the creator can see the remove button', function () {
+
+      cy.request('POST', 'http://localhost:3001/api/login', {
+        username: 'testuser',
+        password: 'testpass'
+      }).then(({ body }) => {
+
+        localStorage.setItem('loggedBlogappUser', JSON.stringify(body))
+
+        cy.visit('/')
+      })
+
+      cy.contains(/^create new blog$/).click()
+
+      cy.get('[placeholder="title"]').type('Blog privado')
+      cy.get('[placeholder="author"]').type('Miguel')
+      cy.get('[placeholder="url"]').type('http://private.com')
+
+      cy.get('#create-blog-button').click()
+
+      cy.contains('logout').click()
+
+      cy.request('POST', 'http://localhost:3001/api/login', {
+        username: 'anotheruser',
+        password: 'anotherpass'
+      }).then(({ body }) => {
+
+        localStorage.setItem('loggedBlogappUser', JSON.stringify(body))
+
+        cy.visit('/')
+      })
+
+      cy.contains('Blog privado Miguel')
+        .parent()
+        .contains(/^view$/)
+        .click()
+
+      cy.contains(/^remove$/).should('not.exist')
     })
 
   })
